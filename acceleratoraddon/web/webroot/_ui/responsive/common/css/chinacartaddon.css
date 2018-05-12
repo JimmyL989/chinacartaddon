@@ -1,0 +1,19 @@
+.add-to-cart .add-to-cart-item .nopadding {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.add-to-cart .add-to-cart-item .container {
+  width: 100%;
+}
+.pageLabel-instoremessage .glyphicon-file {
+	cursor:pointer;
+}
+
+.pageLabel-instoremessage .glyphicon-trash {
+	cursor:pointer;
+}
+
+.pageLabel-instoremessage td[headers=header3] {
+	cursor:pointer;
+}

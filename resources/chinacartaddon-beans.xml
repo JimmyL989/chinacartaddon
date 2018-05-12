@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Copyright [Yang]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="beans.xsd">
+	<bean class="de.hybris.platform.commercefacades.order.data.CartData">
+		<property name="selectedTotalPrice" type="de.hybris.platform.commercefacades.product.data.PriceData" />
+		<property name="selectedFirstPaymentPrice" type="de.hybris.platform.commercefacades.product.data.PriceData" />
+		<property name="selectedTotalItemsCount" type="java.lang.Integer" />
+		<property name="selectedTotalSellersCount" type="java.lang.Integer" />
+		<property name="modifiedCartEntry" type="de.hybris.platform.commercefacades.order.data.OrderEntryData" />
+	</bean>
+
+	<bean class="de.hybris.platform.commercefacades.order.data.OrderEntryData">
+		<property name="selected" type="Boolean" />
+	</bean>
+
+	<bean class="de.hybris.platform.commerceservices.service.data.CommerceOrderResult">
+		<property name="orders" type="java.util.List&lt;de.hybris.platform.core.model.order.OrderModel&gt;">
+			<description>the OrderModels</description>
+		</property>
+	</bean>
+</beans>

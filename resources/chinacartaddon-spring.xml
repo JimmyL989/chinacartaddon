@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright [Yang]
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/aop
+           http://www.springframework.org/schema/aop/spring-aop.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:annotation-config />
+
+	<bean id="chinacartaddonCoreDataImportedEventListener" parent="abstractCoreDataImportedEventListener">
+		<property name="supportedChannels">
+			<list value-type="de.hybris.platform.commerceservices.enums.SiteChannel">
+				<!-- <value>B2C</value> -->
+				<value>B2B</value>
+			</list>
+		</property>
+		<property name="addonExtensionMetadata">
+			<bean class="de.hybris.platform.addonsupport.data.AddonExtensionMetadata">
+				<property name="suffixChannel" value="false" />
+				<property name="baseExtensionName" value="chinacartaddon" />
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="chinacartaddonSampleDataEventListener" parent="abstractGenericAddOnSampleDataEventListener">
+		<property name="extensionName" value="chinacartaddon" />
+	</bean>
+
+	<alias name="chinaFeatureCartService" alias="chinaFeatureCartService" />
+	<bean id="chinaFeatureCartService" class="com.hybris.chinacartaddon.services.cart.impl.ChinaFeatureCartServiceImpl" parent="defaultCartService" >
+		<property name="calculationService" ref="defaultCalculationService"></property>
+		<property name="commerceCartService" ref="defaultCommerceCartService"></property>
+	</bean>
+
+	<bean id="cartSelectedEntryStatisticPopulator" class="com.hybris.chinacartaddon.facades.cart.populators.CartSelectedEntryStatisticPopulator"
+		parent="baseOrderPopulator" />
+
+	<alias name="defaultModificationCartConverter" alias="modificationCartConverter" />
+	<bean id="defaultModificationCartConverter" parent="abstractPopulatingConverter">
+		<property name="targetClass" value="de.hybris.platform.commercefacades.order.data.CartData" />
+		<property name="populators">
+			<list>
+				<!-- <ref bean="miniCartPopulator"/> -->
+				<ref bean="cartSelectedEntryStatisticPopulator" />
+			</list>
+		</property>
+	</bean>
+
+	<alias name="chinaFeatureCartFacade" alias="chinaFeatureCartFacade" />
+	<bean id="chinaFeatureCartFacade" class="com.hybris.chinacartaddon.facades.cart.impl.ChinaFeatureCartFacadeImpl" parent="defaultCartFacade">
+		<property name="chinaFeatureCartService" ref="chinaFeatureCartService" />
+		<property name="modificationCartConverter" ref="modificationCartConverter" />
+	</bean>
+
+	<bean id="chinaFeatureOrderEntryPopulator" class="com.hybris.chinacartaddon.facades.cart.populators.ChinaFeatureOrderEntryPopulator"
+		parent="defaultOrderEntryPopulator">
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="orderEntryConverter" />
+		<property name="add" ref="chinaFeatureOrderEntryPopulator" />
+	</bean>
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="cartConverter" />
+		<property name="add" ref="cartSelectedEntryStatisticPopulator" />
+	</bean>
+
+	<bean parent="modifyPopulatorList">
+		<property name="list" ref="extendedCartConverter" />
+		<property name="add" ref="cartSelectedEntryStatisticPopulator" />
+	</bean>
+
+	<bean id="chinaFeatureCheckoutService" class="com.hybris.chinacartaddon.services.checkout.impl.ChinaFeatureCheckoutServiceImpl"
+		parent="defaultCommerceCheckoutService">
+		<property name="chinaFeaturePlaceOrderStrategy" ref="chinaFeaturePlaceOrderStrategy" />
+	</bean>
+	
+	<bean id="chinaFeatureCheckoutFacade" class="com.hybris.chinacartaddon.facades.checkout.impl.ChinaFeatureCheckoutFacadeImpl" parent="defaultCheckoutFacade">
+		<!-- <property name="anguoCheckoutService" ref="anguoCheckoutService" /> <property name="invoiceConverter" ref="invoiceConverter" 
+			/> -->
+		<property name="chinaFeatureCheckoutService" ref="chinaFeatureCheckoutService"></property>
+		<property name="calculationService" ref="defaultCalculationService"></property>
+	</bean>
+
+	<bean id="chinaFeatureCreateOrderFromCartStrategy" class="com.hybris.chinacartaddon.strategies.impl.CFCreateOrderFromCartStrategyImpl"
+		parent="defaultCreateOrderFromCartStrategy">
+		<property name="cartValidator" ref="cartValidator" />
+		<property name="cloneAbstractOrderStrategy" ref="cloneAbstractOrderStrategy" />
+		<!-- <property name="gvglhb2bpriceService" ref="gvglhb2bpriceService" />
+		<property name="businessProcessStrategies">
+			<list>
+				<ref bean="gvgB2bVehicleStockPaymentProcessStrategy" />
+				<ref bean="gvgB2bVehicleFuturesPaymentProcessStrategy" />
+				<ref bean="gvgB2bPartsStockPaymentProcessStrategy" />
+				<ref bean="gvgB2bVehicleFuturesPartialPayPaymentProcessStrategy" />
+			</list>
+		</property> -->
+	</bean>
+
+	<bean id="chinaFeatureOrderService" class="com.hybris.chinacartaddon.services.order.impl.ChinaFeatureOrderServiceImpl" parent="defaultOrderService">
+		<property name="i18nService" ref="defaultI18NService" />
+		<property name="cfCreateOrderFromCartStrategy" ref="chinaFeatureCreateOrderFromCartStrategy"></property>
+		<property name="submitOrderStrategies">
+			<list>
+				<ref bean="eventPublishingSubmitOrderStrategy" />
+			</list>
+		</property>
+	</bean>
+
+	<bean id="chinaFeaturePlaceOrderStrategy" class="com.hybris.chinacartaddon.strategies.impl.ChinaFeaturePlaceOrderStrategyImpl"
+		parent="defaultCommercePlaceOrderStrategy">
+		<property name="chinaFeatureOrderService" ref="chinaFeatureOrderService"></property>
+		<!-- <property name="commercePlaceOrderMethodHooks" ref="gvgPlaceOrderMethodHooks"></property> -->
+	</bean>
+	
+	<bean id="chinaCartCalculationMethodHook"
+		  class="com.hybris.chinacartaddon.hooks.order.ChinaCartCalculationMethodHook">
+		<property name="modelService" ref="defaultModelService"/>
+	</bean>
+	
+	<bean id="chinaCartCalculationMethodHooksListMergeDirective" depends-on="commerceCartCalculationMethodHooks" parent="listMergeDirective" >
+		<property name="add" ref="chinaCartCalculationMethodHook"  />
+	</bean>
+	
+	<bean class="com.hybris.chinacartaddon.setup.ChinaCartAddonInitialDataSetup" parent="abstractCoreSystemSetup" />
+	
+</beans>
