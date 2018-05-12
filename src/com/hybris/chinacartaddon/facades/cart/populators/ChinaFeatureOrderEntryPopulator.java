@@ -25,8 +25,6 @@ public class ChinaFeatureOrderEntryPopulator extends OrderEntryPopulator
 	// @Autowired
 	// private StockAvaliablePopulator stockAvaliablePopulator;
 
-	// public static final String ANGUO_WAREHOUSE_CODE = "anguo_warehouse";
-
 	@Override
 	public void populate(final AbstractOrderEntryModel source, final OrderEntryData target)
 	{
